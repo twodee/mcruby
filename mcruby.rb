@@ -35,12 +35,25 @@ module Minecraft
       @server = server
     end
 
+    def [] v
+      @server.send "world.getBlock(#{v.x},#{v.y},#{v.z})"
+      @server.receive.lines.first.to_i #split(',').map(&:to_i))
+    end
+
     def []= v, blockType
       @server.send "world.setBlock(#{v.x},#{v.y},#{v.z},#{blockType})"
     end
 
+    def set x, y, z, blockType
+      @server.send "world.setBlock(#{x},#{y},#{z},#{blockType})"
+    end
+
     def time= value
       @server.send "world.time(#{value})"
+    end
+
+    def storm= enabled
+      @server.send "world.setStorm(#{enabled})"
     end
 
     def day
@@ -107,6 +120,18 @@ module Minecraft
 
     def - other
       Vector3.new(x - other.x, y - other.y, z - other.z)
+    end
+
+    def <=> other
+      Vector3.new(x <=> other.x, y <=> other.y, z <=> other.z)
+    end
+
+    def min other
+      Vector3.new([x, other.x].min, [y, other.y].min, [z, other.z].min)
+    end
+
+    def max other
+      Vector3.new([x, other.x].max, [y, other.y].max, [z, other.z].max)
     end
 
     def to_is
